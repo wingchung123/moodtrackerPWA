@@ -1,26 +1,367 @@
 <html>
 
 <head>
-  <title>Express</title>
+  <title>MoodTracker</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" href="/stylesheets/bootstrap-toggle.min.css">
   <link rel="manifest" href="/javascripts/pwa.webmanifest">
   <link rel="apple-touch-icon" href="/images/icon.png">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#82B1FF"/>
-</head>
 
-<body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
-  <span>You are now</span> <span><b class="page-status">online</b></span><br>
-  <button id="button1" type="button" class="btn btn-primary d-none">Test</button>
+  <link href="/stylesheets/mdc.css" rel="stylesheet">
+  <link href="/stylesheets/style.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <script src="/javascripts/material-components-web.min.js"></script>
 
   <script src="/javascripts/status.js"></script>
   <script src="/javascripts/jquery.min.js"></script>
   <script src="/javascripts/bootstrap.min.js"></script>
+  <script src="/javascripts/bootstrap-toggle.min.js"></script>
+
+  <script src="/index.js"></script>
   <script src="/javascripts/pwa.js"></script>
 
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#82B1FF"/>
+</head>
+
+
+
+<body>
+
+	<header class="mdc-top-app-bar mdc-top-app-bar--fixed" style="z-index: 1050">
+	  <div class="mdc-top-app-bar__row">
+	    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+	      <span class="mdc-top-app-bar__title" style="font-weight:bold">MoodTracker</span>
+	    </section>
+	  </div>
+	</header>
+
+	<div class="mdc-tab-bar smart-scroll d-none" id="tabbar" role="tablist">
+	  <div class="mdc-tab-scroller">
+	    <div class="mdc-tab-scroller__scroll-area">
+	      <div class="mdc-tab-scroller__scroll-content">
+	        <button class="mdc-tab mdc-tab--stacked mdc-tab--active" id="questionsTab" role="tab" aria-selected="true">
+			  <span class="mdc-tab__content">
+			    <span class="mdc-tab__icon material-icons" aria-hidden="true">mood</span>
+			    <span class="mdc-tab__text-label">Questions</span>
+			  </span>
+			  <span class="mdc-tab-indicator mdc-tab-indicator--active">
+			    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+			  </span>
+			  <span class="mdc-tab__ripple"></span>
+			</button>
+			<button class="mdc-tab mdc-tab--stacked" role="tab" id="journalTab" aria-selected="false">
+			  <span class="mdc-tab__content">
+			    <span class="mdc-tab__icon material-icons" aria-hidden="true">create</span>
+			    <span class="mdc-tab__text-label">Journal</span>
+			  </span>
+			  <span class="mdc-tab-indicator">
+			    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+			  </span>
+			  <span class="mdc-tab__ripple"></span>
+			</button>
+			<button class="mdc-tab mdc-tab--stacked" role="tab" id="settingsTab" aria-selected="false">
+			  <span class="mdc-tab__content">
+			    <span class="mdc-tab__icon material-icons" aria-hidden="true">settings</span>
+			    <span class="mdc-tab__text-label">Settings</span>
+			  </span>
+			  <span class="mdc-tab-indicator">
+			    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+			  </span>
+			  <span class="mdc-tab__ripple"></span>
+			</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	
+
+	<div class="d-flex" id="navBuffer"></div>
+	<div class="mdc-layout-grid d-none" id="errorAlert" style="padding-bottom: 0">
+		<div class="alert alert-danger" id="errorAlertBody" role="alert" style="text-align: center; margin-bottom: 0rem"></div>
+	</div>
+	<div class="mdc-layout-grid d-none" id="successAlert" style="padding-bottom: 0">
+		<div class="alert alert-success" id="successAlertBody" role="alert" style="text-align: center; margin-bottom: 0rem"></div>
+	</div>
+	<div class="mdc-layout-grid d-none" id="warningAlert" style="padding-bottom: 0">
+		<div class="alert alert-warning" id="warningAlertBody" role="alert" style="text-align: center; margin-bottom: 0rem"></div>
+	</div>
+	<div class="d-none" id="userLogin">
+		<div class="h-100 row align-items-center justify-content-center">
+			<div class="card card-outer">
+
+				<div class="d-flex card-content">
+					What is your name?
+				</div>
+
+				<div class="d-flex card-content" style="padding-top:0px;">
+					<label class="mdc-text-field mdc-text-field--filled mdc-text-field--fullwidth" id="username">
+					  <span class="mdc-text-field__ripple"></span>
+					  <input id="usernameInput"
+					  		 class="mdc-text-field__input"
+					         type="text"
+					         placeholder="Username"
+					         aria-label="Username">
+					  <span class="mdc-line-ripple"></span>
+					</label>
+				</div>
+				<div class="d-flex card-content" style="padding-top:0px;">
+					<button id="usernameSubmit" type="submit" class="btn btn-primary">Submit</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+	<div class="d-none app-body" id="questions">
+		<div class="card card-outer">
+					<div class="card-content" >
+						How are you feeling today?
+					</div>
+			<div class="mdc-layout-grid">
+			  <div class="mdc-layout-grid__inner" style="justify-content: center">
+			  	<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"></div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+			        	<img class="not-selected" id="joy" src="/images/joy.png" width="90px" height="90px">
+			    </div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+			        	<img class="not-selected" id="sadness" src="/images/sadness.png" width="90px" height="90px">
+			    </div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+			        	<img class="not-selected" id="anger" src="/images/anger.png" width="90px" height="90px">
+			    </div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+			        	<img class="not-selected" id="fear" src="/images/fear.png" width="90px" height="90px">
+			    </div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+			        	<img class="not-selected" id="disgust" src="/images/disgust.png" width="90px" height="90px">
+			    </div>
+			    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-1"></div>
+			  </div>
+			</div>
+		</div>
+
+		<div class="card card-outer">
+			<div class="question-block">
+				<div class="d-flex card-content" >How active were you today?</div>
+				<div id="activeResponse" class="d-flex justify-content-around question-responses">
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="activeOptions" id="active1" value="1">
+					  <label class="form-check-label" for="active1">Not Active/Relaxing</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="activeOptions" id="active2" value="2">
+					  <label class="form-check-label" for="active2">Moderate Activity</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="activeOptions" id="active3" value="3">
+					  <label class="form-check-label" for="active3">Very Active</label>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content">What meals did you eat today?</div>
+				<div id="mealsResponse" class="question-responses">
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="breakfast" id="mealsBreakfast">
+					  <label class="form-check-label" for="mealsBreakfast">Breakfast</label>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="lunch" id="mealsLunch">
+					  <label class="form-check-label" for="mealsLunch">Lunch</label>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="dinner" id="mealsDinner">
+					  <label class="form-check-label" for="mealsDinner">Dinner</label>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="dessert" id="mealsDessert">
+					  <label class="form-check-label" for="mealsDessert">Dessert</label>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="no-meals" id="mealsNone">
+					  <label class="form-check-label" for="mealsNone">Didn't eat a full meal today</label>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content" >Did you snack at all today?</div>
+				<div id="snackResponse" class="d-flex justify-content-around question-responses">
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="snackOptions" id="snack1" value="1">
+					  <label class="form-check-label" for="snack1">No Snacks</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="snackOptions" id="snack2" value="2">
+					  <label class="form-check-label" for="snack2">Some Snacks</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="snackOptions" id="snack3" value="3">
+					  <label class="form-check-label" for="snack3">Lots of Snacks</label>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content">Rate how much you ate throughout the day:</div>
+				<div id="fullResponse" class="d-flex question-responses" >
+					<div class="slidecontainer">
+						<input type="range" min="1" max="4" value="1" class="slider" id="fullRange">
+						<p style="margin:0px; padding-top:12px;">Value: <span id="fullDisplay"></span></p>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content">Rate how healthy your diet was today (1-not healthy at all; 10-very healthy):</div>
+				<div id="healthyResponse" class="d-flex question-responses" >
+					<div class="slidecontainer">
+						<input type="range" min="1" max="10" value="1" class="slider" id="healthyRange">
+						<p style="margin:0px; padding-top:12px;">Value: <span id="healthyDisplay"></span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card card-outer">
+			<div class="question-block">
+				<div class="d-flex card-content" >How busy was your day?</div>
+				<div id="busyResponse" class="d-flex question-responses" >
+					<div class="slidecontainer">
+						<input type="range" min="1" max="5" value="1" class="slider" id="busyRange">
+						<p style="margin:0px; padding-top:12px;">Value: <span id="busyDisplay"></span></p>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content" >Do you feel like you had a productive day?</div>
+				<div id="activeResponse" class="d-flex justify-content-around question-responses">
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="productiveOptions" id="productive1" value="1">
+					  <label class="form-check-label" for="productive1">Not really</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="productiveOptions" id="productive2" value="2">
+					  <label class="form-check-label" for="productive2">Somewhat productive</label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" name="productiveOptions" id="productive3" value="3">
+					  <label class="form-check-label" for="productive3">Very productive</label>
+					</div>
+				</div>
+			</div>
+			<div class="question-block">
+				<div class="d-flex card-content">Did anything special happen today? (Optional)</div>
+				<div class="d-flex question-responses align-items-center justify-content-center">
+					<label class="mdc-text-field mdc-text-field--outlined mdc-text-field--fullwidth mdc-text-field--textarea mdc-text-field--with-internal-counter" id="eventsInput">
+					  <span class="mdc-text-field__resizer">
+					    <textarea class="mdc-text-field__input" aria-labelledby="my-label-id" rows="2" cols="20" maxlength="100"></textarea>
+					    <span class="mdc-text-field-character-counter">0 / 140</span>
+					  </span>
+					  <span class="mdc-notched-outline">
+					    <span class="mdc-notched-outline__leading"></span>
+					    <span class="mdc-notched-outline__notch">
+					      <span class="mdc-floating-label" id="my-label-id">Special Events</span>
+					    </span>
+					    <span class="mdc-notched-outline__trailing"></span>
+					  </span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="row d-flex flex-row-reverse" style="margin:24px">
+			<button id="questionsSubmit" type="submit" class="btn btn-primary">Submit</button>
+		</div>
+		
+	</div>
+
+	<div class="d-none app-body" id="journal">
+		<div id="journalPrompt"><p> What's on your mind today?</p></div>
+		<div class="row align-items-center justify-content-center">
+			<label class="mdc-text-field mdc-text-field--outlined mdc-text-field--fullwidth mdc-text-field--textarea mdc-text-field--with-internal-counter" id="journalTextInput">
+			  <span class="mdc-text-field__resizer">
+			    <textarea class="mdc-text-field__input" aria-labelledby="my-label-id" rows="10" cols="80" maxlength="3000"></textarea>
+			    <span class="mdc-text-field-character-counter">0 / 140</span>
+			  </span>
+			  <span class="mdc-notched-outline">
+			    <span class="mdc-notched-outline__leading"></span>
+			    <span class="mdc-notched-outline__notch">
+			      <span class="mdc-floating-label" id="my-label-id">Today's Entry</span>
+			    </span>
+			    <span class="mdc-notched-outline__trailing"></span>
+			  </span>
+			</label>
+		</div>
+		<div class="row d-flex flex-row-reverse">
+			<button id="journalSubmit" type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</div>
+
+	<div class="d-none app-body" id="settings">
+		<div class="card card-outer">
+			<div class="card-content" >
+				Notifications: <input id="notificationToggle" type="checkbox" data-toggle="toggle" data-onstyle="success" data-style="slow" data-offstyle="danger" data-on="enabled" data-off="disabled" data-width="80" data-size="small">
+			</div>
+			<div class="card-content" >
+				<button id="installApp" type="submit" class="btn btn-primary d-none">Install MoodTracker</button>
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- Install Modal -->
+	<div class="modal fade" id="installAppModal" tabindex="-1" role="dialog" aria-labelledby="InstallMoodTracker" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLongTitle">Install MoodTracker</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="modalInstall">Install</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 </body>
 
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyDjhgUUZomqoW1mKb7jbAuSRUKne4mxTZA",
+    authDomain: "moodtracker-289303.firebaseapp.com",
+    databaseURL: "https://moodtracker-289303.firebaseio.com",
+    projectId: "moodtracker-289303",
+    storageBucket: "moodtracker-289303.appspot.com",
+    messagingSenderId: "323129063823",
+    appId: "1:323129063823:web:2a7dcddca434ec95e3b3fa",
+    measurementId: "G-58YL9HJYLS"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+
+<div class="d-flex" id="footerBuffer"></div>
+
+<footer id="footer" class="footer d-none">
+  <div class="footer-copyright text-center py-2">You are currently offline</div>
+</footer>
 </html>

@@ -2,19 +2,37 @@ const CACHE_NAME = 'moodtracker-cache';
 const toCache = [
   '/',
   '/index.html',
+  '/404.html',
+
   '/images/icon.png',
+  '/images/anger.png',
+  '/images/disgust.png',
+  '/images/fear.png',
+  '/images/joy.png',
+  '/images/sadness.png',
   '/images/splash_screen.png',
   '/images/maskable_icon.png',
+
   '/javascripts/pwa.js',
   '/javascripts/status.js',
   '/javascripts/pwa.webmanifest',
   '/javascripts/bootstrap.min.js',
   '/javascripts/bootstrap.min.js.map',
   '/javascripts/jquery.min.js',
+  '/javascripts/material-components-web.min.js',
+  '/javascripts/bootstrap-toggle.min.js',
+  '/javascripts/bootstrap-toggle.min.js.map',
+
+  
+
+  '/index.js',
+  '/stylesheets/bootstrap-toggle.min.css',
+
   '/stylesheets/style.css',
+  '/stylesheets/mdc.css',
+  '/stylesheets/material-components-web.min.css.map',
   '/stylesheets/bootstrap.min.css',
   '/stylesheets/bootstrap.min.css.map'
-
 ];
 
 
