@@ -100,7 +100,7 @@ messaging.setBackgroundMessageHandler(payload => {
     const notificationTitle = notification.title;
     const notificationOptions = {
     body: notification.body,
-    icon: '/images/maskable_icon.png'
+    icon: '/images/icon.png'
   };
 
   // JS for IndexDB

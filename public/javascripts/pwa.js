@@ -21,12 +21,15 @@ $(document).ready( function() {
 		$('#installApp').removeClass('d-none')
 		
 		//Install prompt
-		console.log('showing modal...')
-		$('#installAppModal').modal('show')
+		if (typeof CURRENTUSER !== 'undefined'){
+			console.log('showing modal...')
+			$('#installAppModal').modal('show')
+		}
+
 	})
 
 	window.addEventListener('appinstalled', (e) => {
-		app.logEvent('moodtracker', 'installed')
+		firebase.analytics().logEvent('moodtracker_installed', CURRENTUSER)
 	})
 
 	$('#installApp').click(() => {
@@ -93,7 +96,13 @@ function generateMessageToken() {
 
 		FIREBASEMESSAGING.onMessage(payload => {
 			console.log("Message received. ", payload);
-			// const {title, ...options } = payload.notification;
+			navigator.serviceWorker.getRegistration().then(function(reg) {
+		      let {title, ...options } = payload.notification;
+		      options.icon = '../images/icon.png'
+		      options.badge = '../images/icon.png'
+		      reg.showNotification(title, options);
+		    });
+			
 		})
 	} catch (e) {
 		console.log("***Firebase***: unable to generate message token")

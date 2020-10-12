@@ -105,7 +105,6 @@ function requestNotification() {
 					console.log("Granted notification permission")
 					notificationToggle(true)
 					setNotificationValue(true)
-					generateMessageToken()
 
 				} else {
 					console.log("Permission denied")
@@ -117,7 +116,12 @@ function requestNotification() {
 			// notifications are enabled by the browser. need to set local variable to reflect user change
 			// console.log("notifications were already enabled. Need to disable.")
 			// displayWarning("To disable notifications, disable them in your browser. <a href='https://usa.kaspersky.com/blog/disable-browser-notifications/18276/' target='_blank'>Click here for more help</a>")
-			setNotificationValue($('#notificationToggle').prop('checked'))
+			if (!navigator.onLine) {
+				displayWarning("Notifications can only be disabled/enabled when online")
+			} else {
+				setNotificationValue($('#notificationToggle').prop('checked'))
+			}
+			
 		}
 	}
 }
@@ -179,7 +183,7 @@ function setMessageToken(token){
 
 
 function setupNotificationToggle(){
-	if ("Notification" in window && Notification.permission === "granted") {
+	if ("Notification" in window && Notification.permission === "granted" && navigator.onLine) {
 		getNotificationValue().then( (notificationValue) => {
 			notificationToggle(notificationValue)
 		})

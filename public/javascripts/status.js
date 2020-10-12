@@ -8,7 +8,8 @@ function checkOnlineStatus() {
 	} else {
 		console.log("back online... check to see if there needs to be anything uploaded.")
 		let successfulUploads = true
-		OBJECTSTORES.forEach( (objStore) => {
+		let count = 0
+		OBJECTSTORES.forEach( (objStore, i, array) => {
 			let store = createTransaction(objStore, 'readwrite')
 			let index = store.index('uploadedToCloud')
 
@@ -19,6 +20,7 @@ function checkOnlineStatus() {
 				// console.log(allRecords)
 
 				if (allRecords.result.length > 0) {
+					count++;
 					allRecords.result.forEach( (obj) => {
 						uploadAndAddData(objStore, obj).then((successBool) => {
 							if (!successBool) {
@@ -33,6 +35,9 @@ function checkOnlineStatus() {
 				} else {
 					console.log("***IndexDB***: Table " + objStore + " is up to date with the cloud!")
 				}
+				if (successfulUploads && count > 0 && i == array.length -1) {
+					displaySuccess("Previous offline entires have been uploaded to the cloud.")
+				}
 			}
 
 			allRecords.onerror = (err) => {
@@ -40,8 +45,7 @@ function checkOnlineStatus() {
 			}
 		})
 
-		if (successfulUploads) {
-			displaySuccess("Previous offline entires have been uploaded to the cloud.")
-		}
+
+
 	}
 }
