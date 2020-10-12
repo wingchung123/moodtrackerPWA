@@ -357,8 +357,14 @@
     measurementId: "G-58YL9HJYLS"
   };
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
+  try {
+  	firebase.initializeApp(firebaseConfig);
+  	firebase.analytics();
+  } catch (e) {
+  	console.log("Firebase error... Most likely offline")
+  	console.log(e)
+  }
+
 
 </script>
   <script src="/javascripts/pwa.js"></script>

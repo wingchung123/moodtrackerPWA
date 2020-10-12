@@ -45,6 +45,7 @@ $(document).ready( function() {
 		})
 
 		setupNotificationToggle()
+		checkOnlineStatus()
 	}
 
 
@@ -116,7 +117,6 @@ function requestNotification() {
 			// notifications are enabled by the browser. need to set local variable to reflect user change
 			// console.log("notifications were already enabled. Need to disable.")
 			// displayWarning("To disable notifications, disable them in your browser. <a href='https://usa.kaspersky.com/blog/disable-browser-notifications/18276/' target='_blank'>Click here for more help</a>")
-			console.log("Toggling local db notification value")
 			setNotificationValue($('#notificationToggle').prop('checked'))
 		}
 	}
@@ -186,13 +186,11 @@ function setupNotificationToggle(){
 	}
 
     $('#notificationToggle').change(function(event) {
-    	console.log("toggle change event fired")
-
     	if (!("Notification" in window) ){
     		displayWarning("Notifications not supported")
     	} else if ( !($(this).prop('checked')) && Notification.permission === "denied" ) {
     		//do nothing
-    		console.log("Permission is denied & toggle is disabled")
+    		// console.log("Permission is denied & toggle is disabled")
 
     	} else {
     		requestNotification();
@@ -208,7 +206,7 @@ function createIndexedDB() {
   }
   
   let request = window.indexedDB.open('pwaDB', 1, function(upgradeDb) {
-  	console.log("within upgrade function...")
+  	console.log("***IndexDB***: upgrading db...")
     createObjectStores(upgradeDb)
   });
 
@@ -231,12 +229,12 @@ function createTransaction(objectStore, permissions) {
 	const transaction = db.transaction(objectStore, permissions)
 
 	transaction.oncomplete = (event) => {
-		console.log("Transaction complete!")
+		console.log("***IndexDB***: Transaction complete!")
 	}
 
 	transaction.onerror = (error) => {
 		console.log(error)
-		displayError("Error: database transaction failed.")
+		displayError("***IndexDB***: ERROR - database transaction failed.")
 	}
 
 	return transaction.objectStore(objectStore);
@@ -244,21 +242,23 @@ function createTransaction(objectStore, permissions) {
 
 function createObjectStores(upgradeDB) {
 	if (!upgradeDB.objectStoreNames.contains('users')) {
-    	console.log("adding users objectstore")
 		const usersOS = upgradeDB.createObjectStore('users', {keyPath: 'username'});
-		usersOS.createIndex("isActiveColumn", "isActive", {unique:false} )
+		usersOS.createIndex("isActiveColumn", "isActive", {unique:false})
+		usersOS.createIndex("uploadedToCloud", "uploadedToCloud", {unique:false} )
 
     }
 
    	if (!upgradeDB.objectStoreNames.contains('journalEntries')) {
-    	console.log("adding journal entry objectstore")
 		const usersOS = upgradeDB.createObjectStore('journalEntries', {keyPath: ['username', 'timestamp']});
+		usersOS.createIndex("uploadedToCloud", "uploadedToCloud", {unique:false} )
+
 
     }
 
     if (!upgradeDB.objectStoreNames.contains('questionEntries')) {
-    	console.log("adding question entry objectstore")
 		const usersOS = upgradeDB.createObjectStore('questionEntries', {keyPath: ['username', 'timestamp']});
+		usersOS.createIndex("uploadedToCloud", "uploadedToCloud", {unique:false} )
+
 
     }
 }
@@ -329,7 +329,7 @@ async function uploadData(table,data) {
 function uploadAndAddData(table, obj) {
 	return new Promise(function(resolve){
 		uploadData(table, obj).then((isUploaded) => {
-			obj.uploadedToCloud = isUploaded
+			obj.uploadedToCloud = isUploaded == true ? 1:0
 			addData(table, obj).then((bool) => {
 				// console.log("upload: " + isUploaded)
 				// console.log("bool: " + bool)
@@ -595,9 +595,8 @@ function jorunalSubmitSetup() {
 				defaultSubmit($(this))
 				displaySuccess("Jorunal Entry Submitted.")
 				journalTextInput.value = ""
-				console.log('jounral submitted...')
 			} else {
-				console.log('failed to submit journal entry')
+				console.log('***IndexDB***: failed to submit journal entry')
 			}
 		})
 
@@ -689,8 +688,8 @@ function questionsSubmitSetup() {
 					defaultSubmit($(this))
 					displaySuccess("Questions Entry Submitted.")
 					clearQuestionsSelection()
-					console.log('question responses submitted')
-
+				} else {
+					console.log('***IndexDB***: failed to submit questions entry')
 				}
 			})
 		} else {

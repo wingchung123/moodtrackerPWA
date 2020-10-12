@@ -60,8 +60,13 @@ function init() {
         console.log('Service worker registered -->', reg);
         SERVICEWORKER = reg
 
-        FIREBASEMESSAGING = firebase.messaging();
-		FIREBASEMESSAGING.useServiceWorker(SERVICEWORKER)
+        try {
+	        FIREBASEMESSAGING = firebase.messaging();
+			FIREBASEMESSAGING.useServiceWorker(SERVICEWORKER)
+        } catch (e) {
+        	console.log("Firebase error creating messaging service... Most likely offline.")
+        }
+
 
       }, (err) => {
         console.error('Service worker not registered -->', err);
@@ -69,51 +74,60 @@ function init() {
   }
 }
 
-function generateMessageToken() {
-	console.log("generating message token")
-
-	FIREBASEMESSAGING.getToken().then( (token) => {
-		console.log("token generated")
-		setMessageToken(token).then((resultBool) => {
-			if (resultBool) {
-				console.log("token submitted to databases.")
-			} else {
-				console.log("unable to write message token to database")
-				displayWarning("Unable to enable notifications.")
-			}
+function generateMessageToken() {	
+	try {
+		FIREBASEMESSAGING.getToken().then( (token) => {
+			console.log("***Firebase***: messaging token generated")
+			setMessageToken(token).then((resultBool) => {
+				if (resultBool) {
+					console.log("***IndexDB***: token submitted to databases.")
+				} else {
+					console.log("***IndexDB***: unable to write message token to database")
+					displayWarning("Unable to enable notifications.")
+				}
+			})
+		}).catch( (err) => {
+			console.log("Error getting messaging token...")
+			console.log(err)
 		})
-	}).catch( (err) => {
-		console.log("Error getting messaging token...")
-		console.log(err)
-	})
 
-	FIREBASEMESSAGING.onMessage(payload => {
-		console.log("Message received. ", payload);
-		// const {title, ...options } = payload.notification;
-	})
+		FIREBASEMESSAGING.onMessage(payload => {
+			console.log("Message received. ", payload);
+			// const {title, ...options } = payload.notification;
+		})
+	} catch (e) {
+		console.log("***Firebase***: unable to generate message token")
+		console.log(e)
+	}
+
 }
 
 function deleteMessageToken() {
-
-	token = FIREBASEMESSAGING.getToken().then( (token) => {
+	try {
+		token = FIREBASEMESSAGING.getToken().then( (token) => {
 
 		FIREBASEMESSAGING.deleteToken(token).then( (bool) => {
 
 
 			if (bool) {
-				console.log('Successfully deleted token')
+				console.log('***Firebase***: Successfully deleted token')
 				setMessageToken(token).then((resultBool) => {
 					if (resultBool) {
-						console.log("Token removed from databases.")
+						console.log("***IndexDB***: Token removed from databases.")
 					} else {
-						console.log("unable to remove message token to database")
+						console.log("***IndexDB***: unable to remove message token to database")
 					}
 				})
 			} else {
-				console.log('Error disabling messaging token')
+				console.log('***Firebase***: Error disabling messaging token')
 			}
 		})
 
-	})
+		})
+	} catch (e) {
+		console.log("***Firebase***: error when deleting message token... Most likely offline")
+		console.log(e)
+	}
+	
 
 }

@@ -26,7 +26,6 @@ const toCache = [
   '/javascripts/material-components-web.min.js',
   '/javascripts/bootstrap-toggle.min.js',
   '/javascripts/bootstrap-toggle.min.js.map',
-
   
 
   '/index.js',
