@@ -13,6 +13,8 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script src="/javascripts/material-components-web.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/node-forge@0.7.0/dist/forge.min.js"></script>
+
 
   <script src="/javascripts/status.js"></script>
   <script src="/javascripts/jquery.min.js"></script>
@@ -20,7 +22,6 @@
   <script src="/javascripts/bootstrap-toggle.min.js"></script>
 
   <script src="/index.js"></script>
-  <script src="/javascripts/pwa.js"></script>
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -339,6 +340,8 @@
 <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
 <script src="https://www.gstatic.com/firebasejs/7.22.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-messaging.js"></script>
+
 
 <script>
   // Your web app's Firebase configuration
@@ -356,7 +359,9 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   firebase.analytics();
+
 </script>
+  <script src="/javascripts/pwa.js"></script>
 
 
 <div class="d-flex" id="footerBuffer"></div>

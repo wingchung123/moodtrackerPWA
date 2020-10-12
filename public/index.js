@@ -6,9 +6,7 @@ var FULLRANGEMOVED = false;
 var HEALTHYRANGEMOVED = false;
 var BUSYRANGEMOVED = false;
 
-
 $(document).ready( function() {
-
 
 	// Setup app bar & tab bar
 	$('.mdc-tab').css('margin-top', $('.mdc-top-app-bar').outerHeight() + 'px')
@@ -50,6 +48,7 @@ $(document).ready( function() {
 	}
 
 
+
 	
 
 	// adds tab listeners
@@ -78,6 +77,7 @@ $(document).ready( function() {
 	questionsSubmitSetup()
 
 
+
 })
 
 function notificationToggle(bool) {
@@ -104,6 +104,8 @@ function requestNotification() {
 					console.log("Granted notification permission")
 					notificationToggle(true)
 					setNotificationValue(true)
+					generateMessageToken()
+
 				} else {
 					console.log("Permission denied")
 					notificationToggle(false)
@@ -123,7 +125,7 @@ function requestNotification() {
 function getNotificationValue(){
 	return new Promise( function(resolve) {
 		getCurrentUser().then( (userObject) => {
-			return resolve(userObject.notification)
+			return resolve(typeof userObject === 'undefined' ? false:userObject.notification)
 		})
 	})
 }
@@ -131,14 +133,50 @@ function getNotificationValue(){
 function setNotificationValue(notificationValue){
 	return new Promise( function(resolve) {
 		let userObject = getCurrentUser().then( (userObject) => {
+			if (typeof userObject === 'undefined') {
+				return resolve(null)
+			}
 			userObject.notification = notificationValue
 			addData('users', userObject).then((successBool) => {
+				if (successBool) {
+					if (userObject.notification) {
+						generateMessageToken()
+					} else {
+						deleteMessageToken()
+					}
+				}
+
+
 				return resolve(successBool)
 			})
 		})
 		
 	})
 }
+
+function getMessageToken(){
+	return new Promise( function(resolve) {
+		getCurrentUser().then( (userObject) => {
+			return resolve(typeof userObject === 'undefined' ? false:userObject.messageToken)
+		})
+	})
+}
+
+function setMessageToken(token){
+	return new Promise( function(resolve) {
+		let userObject = getCurrentUser().then( (userObject) => {
+			if (typeof userObject === 'undefined') {
+				return resolve(null)
+			}
+			userObject.messageToken = token
+			uploadAndAddData('users', userObject).then((successBool) => {
+				return resolve(successBool)
+			})
+		})
+		
+	})
+}
+
 
 function setupNotificationToggle(){
 	if ("Notification" in window && Notification.permission === "granted") {

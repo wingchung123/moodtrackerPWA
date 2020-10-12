@@ -4,5 +4,4 @@ function init() {
 	if (!navigator.onLine) {
 		$('#footer').removeClass('d-none')
 	}
-
 }
