@@ -7,6 +7,12 @@ let FIREBASEMESSAGING;
 
 $(document).ready( function() {
 
+	const isIos = () => {
+	  const userAgent = window.navigator.userAgent.toLowerCase();
+	  return /iphone|ipad|ipod/.test( userAgent );
+	}
+	// Detects if device is in standalone mode
+	const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
 
 
@@ -20,16 +26,12 @@ $(document).ready( function() {
 
 		$('#installApp').removeClass('d-none')
 		
-		//Install prompt
-		if (typeof CURRENTUSER !== 'undefined'){
-			console.log('showing modal...')
-			$('#installAppModal').modal('show')
-		}
 
 	})
 
 	window.addEventListener('appinstalled', (e) => {
-		firebase.analytics().logEvent('moodtracker_installed', CURRENTUSER)
+		console.log("adding logs: ", CURRENTUSER)
+		FIREBASEANALYTICS.logEvent('moodtracker_installed', CURRENTUSER)
 	})
 
 	$('#installApp').click(() => {
@@ -40,20 +42,32 @@ $(document).ready( function() {
 		installApp()
 	})
 
+	$('#iosOkay').click(() => {
+		$('#iosInstallModal').modal('hide')
+	})
+
 
 })
 
 function installApp() {
 	console.log("Installing app...")
-	deferredPrompt.prompt();
-	deferredPrompt.userChoice.then((choiceResult) => {
-		if (choiceResult.outcome === 'accepted') {
-			console.log("User accepted A2HS prompt")
-		}
 
-		deferredPrompt = null
-		$('#installAppModal').modal('hide')
-	})
+	// Checks if should display install popup notification:
+	if (isIos() && !isInStandaloneMode()) {
+		$('#iosInstallModal').modal('show')
+	} else if (!isIos()) {
+		deferredPrompt.prompt();
+		deferredPrompt.userChoice.then((choiceResult) => {
+			if (choiceResult.outcome === 'accepted') {
+				console.log("User accepted A2HS prompt")
+			}
+
+			deferredPrompt = null
+			$('#installAppModal').modal('hide')
+		})
+	}
+
+
 }
 
 function init() {
@@ -98,8 +112,8 @@ function generateMessageToken() {
 			console.log("Message received. ", payload);
 			navigator.serviceWorker.getRegistration().then(function(reg) {
 		      let {title, ...options } = payload.notification;
-		      options.icon = '../images/icon.png'
-		      options.badge = '../images/icon.png'
+		      options.icon = '/../images/icon2.png'
+		      options.badge = '/../images/icon2.png'
 		      reg.showNotification(title, options);
 		    });
 			

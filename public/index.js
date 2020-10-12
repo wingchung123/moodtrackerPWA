@@ -209,7 +209,7 @@ function createIndexedDB() {
   	return null;
   }
   
-  let request = window.indexedDB.open('pwaDB', 1, function(upgradeDb) {
+  let request = window.indexedDB.open('pwaDB', 2, function(upgradeDb) {
   	console.log("***IndexDB***: upgrading db...")
     createObjectStores(upgradeDb)
   });
@@ -467,6 +467,8 @@ function usernameLoginSetup() {
 			if(userCreated != 0) {
 				CURRENTUSER = usernameInput.value;
 				showLandingPage();
+				$('#installAppModal').modal('show')
+
 			} else {
 				// error display should've been handled within promise
 			}

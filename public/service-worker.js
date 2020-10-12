@@ -9,6 +9,11 @@ const toCache = [
   '/404.html',
 
   '/images/icon.png',
+  '/images/icon-192x192.png',
+  '/images/icon-256x256.png',
+  '/images/icon-384x384.png',
+  '/images/icon-512x512.png',
+
   '/images/anger.png',
   '/images/disgust.png',
   '/images/fear.png',
@@ -79,6 +84,7 @@ self.addEventListener('activate', function(event) {
   )
 })
 
+
 var firebaseConfig = {
   apiKey: "AIzaSyDjhgUUZomqoW1mKb7jbAuSRUKne4mxTZA",
   authDomain: "moodtracker-289303.firebaseapp.com",
@@ -95,12 +101,12 @@ firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(payload => {
-  console.log("THIS IS SERVICE WORKER")
     const notification = JSON.parse(payload.data.notification);
     const notificationTitle = notification.title;
     const notificationOptions = {
     body: notification.body,
-    icon: '/images/icon.png'
+    icon: '/images/icon-192x192.png',
+    badge: '/images/icon-192x192.png'
   };
 
   // JS for IndexDB
