@@ -463,16 +463,21 @@ function usernameLoginSetup() {
 
 	$('#usernameSubmit').click(function(event) {
 		loadingSubmit($(this))
-		createUser(usernameInput.value).then((userCreated) => {
-			if(userCreated != 0) {
-				CURRENTUSER = usernameInput.value;
-				showLandingPage();
-				$('#installAppModal').modal('show')
+		if (usernameInput.value.trim() == '') {
+			displayWarning("Username must not be empty")
+		} else {
+			createUser(usernameInput.value).then((userCreated) => {
+				if(userCreated != 0) {
+					CURRENTUSER = usernameInput.value;
+					showLandingPage();
+					$('#installAppModal').modal('show')
 
-			} else {
-				// error display should've been handled within promise
+				} else {
+					// error display should've been handled within promise
+				}
+			});
 			}
-		});
+
 		
 	})
 }
